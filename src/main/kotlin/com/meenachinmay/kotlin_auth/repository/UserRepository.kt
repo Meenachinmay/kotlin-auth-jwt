@@ -38,9 +38,11 @@ class UserRepository {
     fun deleteByUUID(uuid: UUID): Boolean {
         val foundUser = findByUUID(uuid)
 
-        return foundUser?.let {
-            users.remove(it)
-        } ?: false
+        if (foundUser != null) {
+            users.remove(foundUser)
+            return true
+        }
+        return false
     }
 
 }
