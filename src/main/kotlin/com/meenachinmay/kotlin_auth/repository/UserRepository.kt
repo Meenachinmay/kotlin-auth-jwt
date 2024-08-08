@@ -2,29 +2,32 @@ package com.meenachinmay.kotlin_auth.repository
 
 import com.meenachinmay.kotlin_auth.model.Role
 import com.meenachinmay.kotlin_auth.model.User
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Repository
 import java.util.*
 
 @Repository
-class UserRepository {
+class UserRepository(private val passwordEncoder: PasswordEncoder) {
     private val users: MutableList<User> = mutableListOf(
         User (
             id = UUID.randomUUID(),
             email = "chinmayanand896@gmail.com",
-            password = "password",
+            password = passwordEncoder.encode("password"),
             role = Role.USER,
         ),
         User (
             id = UUID.randomUUID(),
             email = "chinmayanand896@icloud.com",
-            password = "password",
+            password = passwordEncoder.encode("password"),
             role = Role.ADMIN,
         ),
     )
 
     // CRUD operations for USER
-    fun newUser(user : User): Boolean =
-        users.add(user)
+    fun newUser(user : User): Boolean {
+        val updatedUser = user.copy(password = passwordEncoder.encode(user.password))
+        return users.add(updatedUser)
+    }
 
     fun findByEmail(email: String): User? =
         users.firstOrNull { it.email == email }
